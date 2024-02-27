@@ -6,6 +6,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectToDatabase = require("../database");
+
+// crm routes
 const studentRoutes = require("./routes/studentRoutes");
 const user_typeRoutes = require("./routes/user_typeRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -17,6 +19,13 @@ const folowUpRoutes = require("./routes/folowUpRoutes");
 const sourceRoutes = require("./routes/sourceRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const counsellorAssignmentRoutes = require("./routes/counsellorAssignmentRoutes");
+
+// rms routes
+const refereesRoutes = require("./routes/refereesRoutes");
+const refStatusRoutes = require("./routes/refStatusRoutes");
+const referralRoutes = require("./routes/referralRoutes");
+
+// middlewares
 const requireAuth = require("./middleware/requireAuth");
 const logFunctionExecution = require("./middleware/log");
 const socketIo = require('socket.io');
@@ -49,6 +58,9 @@ app.use((req, res, next) => {
   if (req.path === "/api/login") {
     return next();
   }
+  if (req.path === "/api/referral/login") {
+    return next();
+  }
   if (req.path === "/api/fbleads") {
     return next();
   }
@@ -73,6 +85,11 @@ app.use("/api", folowUpRoutes);
 app.use("/api", sourceRoutes);
 app.use("/api", counsellorAssignmentRoutes);
 app.use("/api", notificationRoutes);
+
+// use rms routes
+app.use("/api/referral", refereesRoutes);
+app.use("/api/referral", refStatusRoutes);
+app.use("/api/referral", referralRoutes);
 
 const httpsOptions = {
   key: fs.readFileSync(path.join(__dirname, "../server.key")),
