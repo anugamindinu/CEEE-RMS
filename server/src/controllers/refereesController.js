@@ -2,6 +2,8 @@ require("dotenv").config();
 const Referee = require("../models/referee");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
+const moment = require("moment");
 // const mongoose = require("mongoose");
 
 async function getUsers(req, res) {
@@ -65,6 +67,7 @@ async function createUser(req, res) {
     const verificationCode = generateVerificationCode();
 
     // Send the verification code via SMS (assuming you have this function implemented)
+    await sendVerificationCode(phoneNumber, verificationCode);
 
     // Store the verification code and user data temporarily
     verificationDataStore[phoneNumber] = {
@@ -161,35 +164,46 @@ async function sendVerificationCode(phoneNumber, verificationCode) {
   const data = {
     messages: [
       {
+        clientRef: "0934345",
         number: phoneNumber,
-        mask: "PIZZAHUT", // Update the mask if necessary
-        text: `Your verification code is ${verificationCode}`,
-        campaignName: "xmasPromo", // Update the campaign name if necessary
+        mask: "SLTC", // Update the mask if necessary
+        text: `This is a test message 2`,
+        campaignName: "rmstest",
       },
     ],
   };
 
+  // Get the current date time in the required format
+  const currentDateTime = moment().format("YYYY-MM-DDTHH:mm:ss");
+  console.log("Current date time:", currentDateTime);
+
   try {
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "USER": "user_slt",
+        "DIGEST": "23383276670a8227dc53f93a952ccfa6",
+        "CREATED": currentDateTime,
+        "Authorization": `Bearer ${apiKey}`,
       },
-      body: JSON.stringify(data),
     });
 
-    const responseData = await response.json();
+    // Log the response status
+    console.log("Response status:", response.status);
 
-    if (!response.ok) {
-      throw new Error(
-        `SMS sending failed with status code: ${response.status}, ${responseData.resultDesc}`
-      );
+    // Check if response data exists
+    const responseData = response.data;
+    console.log("Response data:", responseData);
+
+    // Check if response status is OK
+    if (response.status === 200) {
+      console.log("Verification code sent successfully");
+    } else {
+      console.error("SMS sending failed:", responseData);
+      throw new Error(`SMS sending failed with status code: ${response.status}`);
     }
-
-    console.log("Verification code sent successfully");
   } catch (error) {
-    console.error("Error sending verification code:", error);
+    console.error("Error sending verification code:", error.message);
     throw error;
   }
 }
