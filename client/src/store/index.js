@@ -1,9 +1,24 @@
-import { createStore } from 'redux';
-import reducer from './reducer';
+// third-party
+import { configureStore } from '@reduxjs/toolkit';
+import { useDispatch as useAppDispatch, useSelector as useAppSelector } from 'react-redux';
+
+import { persistStore } from 'redux-persist';
+
+// project imports
+import rootReducer from './reducer';
 
 // ==============================|| REDUX - MAIN STORE ||============================== //
 
-const store = createStore(reducer);
-const persister = 'Free';
+const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false, immutableCheck: false })
+});
 
-export { store, persister };
+const persister = persistStore(store);
+
+const { dispatch } = store;
+
+const useDispatch = () => useAppDispatch();
+const useSelector = useAppSelector;
+
+export { store, persister, dispatch, useSelector, useDispatch };
