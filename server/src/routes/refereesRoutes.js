@@ -8,5 +8,10 @@ router.post("/referees/add-new", refereesController.createUser);
 router.post("/login", refereesController.login);
 router.get("/referees/:id", refereesController.getUserById);
 router.put("/update-referee-password/:id", refereesController.updatePassword);
+router.post("/verifyCode", refereesController.verifyCode);
+// requestResetPassword
+router.post("/requestResetPassword", refereesController.requestResetPassword);
+// resetPassword
+router.post("/resetPassword", refereesController.resetPassword);
 
 module.exports = router;

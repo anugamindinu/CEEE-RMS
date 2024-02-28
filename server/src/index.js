@@ -54,22 +54,25 @@ app.use(logFunctionExecution);
 
 // Apply requireAuth middleware globally for all routes
 app.use((req, res, next) => {
-  // Exclude login route from authentication
-  if (req.path === "/api/login") {
-    return next();
+  // Define paths that should be excluded from authentication
+  const excludedPaths = [
+    "/api/login",
+    "/api/referral/login",
+    "/api/referral/verifyCode",
+    "/api/referral/login",
+    "/api/referral/referees/add-new",
+    "/api/referral/verifyCode",
+    "/api/fbleads",
+    "/api/fbleads-health",
+    "/api/test-leads"
+  ];
+
+  // Check if the current request path is in the excluded paths
+  if (excludedPaths.includes(req.path)) {
+    return next(); // Skip authentication for excluded paths
   }
-  if (req.path === "/api/referral/login") {
-    return next();
-  }
-  if (req.path === "/api/fbleads") {
-    return next();
-  }
-  if (req.path === "/api/fbleads-health") {
-    return next();
-  }
-  if (req.path === "/api/test-leads") {
-    return next();
-  }
+  
+  // For all other paths, require authentication
   requireAuth(req, res, next);
 });
 

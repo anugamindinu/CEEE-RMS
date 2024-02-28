@@ -14,32 +14,183 @@ async function getUsers(req, res) {
   }
 }
 
+const verificationDataStore = {};
+const VERIFICATION_CODE_EXPIRATION_TIME = 5 * 60 * 1000; 
+const RESET_PASSWORD_CODE_EXPIRATION_TIME = 5 * 60 * 1000;
+
+async function getVerificationData(phoneNumber) {
+  const verificationData = verificationDataStore[phoneNumber];
+  if (!verificationData) return null;
+
+  // Check if verification code has expired
+  if (
+    Date.now() - verificationData.timestamp >
+    VERIFICATION_CODE_EXPIRATION_TIME
+  ) {
+    delete verificationDataStore[phoneNumber]; // Remove expired verification data
+    return null;
+  }
+
+  return verificationData;
+}
+
+async function clearVerificationData(phoneNumber) {
+  delete verificationDataStore[phoneNumber];
+}
+
 async function createUser(req, res) {
   try {
-    const { name, password, email } = req.body;
+    const {
+      name,
+      password,
+      phoneNumber,
+      account_name,
+      account_number,
+      bank_name,
+      branch,
+      NIC,
+      profilePicture,
+      email,
+    } = req.body;
 
-    // check if the email already exists
-    const userAvailable = await Referee.findOne({ email });
-
-    if (userAvailable) {
-      return res.status(400).json({ error: "Email already exists" });
+    // Check if user with the provided email already exists
+    const existingUser = await Referee.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists" });
     }
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate a verification code
+    const verificationCode = generateVerificationCode();
 
-    // Assign the user_type _id and hashed password to the user before saving
-    const user = new Referee({
+    // Send the verification code via SMS (assuming you have this function implemented)
+
+    // Store the verification code and user data temporarily
+    verificationDataStore[phoneNumber] = {
       name,
-      password: hashedPassword,
-      email,
+      password: await bcrypt.hash(password, 10),
+      phoneNumber,
+      verificationCode,
+      account_name,
+      account_number,
+      bank_name,
+      branch,
+      NIC,
+      profilePicture,
+      email, // Include email in verification data
+    };
+
+    // Send response with instructions to verify code
+    res.status(202).json({
+      message:
+        "Verification code sent to your phone number. Please enter the code to complete registration.",
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging purposes
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function verifyCode(req, res) {
+  try {
+    const { phoneNumber, verificationCode } = req.body;
+
+    // Retrieve temporary user data based on phone number
+    const verificationData = await getVerificationData(phoneNumber);
+
+    if (!verificationData) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or expired verification code" });
+    }
+
+    if (verificationData.verificationCode !== verificationCode) {
+      return res.status(400).json({ error: "Incorrect verification code" });
+    }
+
+    // Code verified, proceed to save user details
+    await saveUserDetails(verificationData);
+
+    // Clear temporary verification data
+    await clearVerificationData(phoneNumber);
+
+    res.status(201).json({ message: "User created successfully!" });
+  } catch (error) {
+    console.error(error); // Log error for debugging purposes
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function saveUserDetails(verificationData) {
+  try {
+    const user = new Referee({
+      full_name: verificationData.name,
+      password: verificationData.password,
+      contact_number: verificationData.phoneNumber,
+      email: verificationData.email,
+      account_name: verificationData.account_name || null,
+      account_number: verificationData.account_number || null,
+      bank_name: verificationData.bank_name || null,
+      branch: verificationData.branch || null,
+      NIC: verificationData.NIC || null,
+      profilePicture: verificationData.profilePicture || null,
+    });
+    await user.save();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Function to generate a unique verification code
+function generateVerificationCode() {
+  const digits = "0123456789";
+  let code = "";
+  for (let i = 0; i < 4; i++) {
+    code += digits[Math.floor(Math.random() * digits.length)];
+  }
+  console.log("Generated verification code:", code);
+  return code;
+}
+
+// Function to send the verification code via SMS (replace with your preferred method)
+async function sendVerificationCode(phoneNumber, verificationCode) {
+  const url = "https://richcommunication.dialog.lk/api/sms/send";
+  const apiKey = process.env.SMS_API_KEY;
+
+  const data = {
+    messages: [
+      {
+        number: phoneNumber,
+        mask: "PIZZAHUT", // Update the mask if necessary
+        text: `Your verification code is ${verificationCode}`,
+        campaignName: "xmasPromo", // Update the campaign name if necessary
+      },
+    ],
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(data),
     });
 
-    // Save and return user with success message
-    await user.save();
-    res.status(201).json({ user, message: "User created!" });
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        `SMS sending failed with status code: ${response.status}, ${responseData.resultDesc}`
+      );
+    }
+
+    console.log("Verification code sent successfully");
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error sending verification code:", error);
+    throw error;
   }
 }
 
@@ -47,11 +198,8 @@ async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    // Find the user with the given email and populate the 'user_type' field
-    const user = await Referee.findOne({ email }).populate({
-      path: "user_type",
-      model: "User_type",
-    });
+    // Find the user with the given email
+    const user = await Referee.findOne({ email });
 
     // Check if the user exists
     if (!user) {
@@ -66,28 +214,14 @@ async function login(req, res) {
     }
 
     // Extract relevant information for the token payload
-    const { _id, name: userName, email: userEmail, user_type: userType } = user;
+    const { _id, full_name: userName, email: userEmail } = user;
 
-    // Extract permissions from user_type
-    const permissions = userType
-      ? {
-          lead: userType.lead,
-          user: userType.user,
-          student: userType.student,
-          branch: userType.branch,
-          course: userType.course,
-          settings: userType.course,
-        }
-      : {};
-    // Create JWT token with user information and permissions
+    // Create JWT token with user information
     const token = jwt.sign(
-      { userId: _id, userName, userEmail, userType, permissions },
+      { userId: _id, userName, userEmail },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
-    // Attach the decoded user information to the req object
-    req.user = jwt.decode(token);
 
     // Return the token along with success message and user data
     res.status(200).json({
@@ -96,10 +230,107 @@ async function login(req, res) {
       _id,
       userName,
       userEmail,
-      userType,
-      permissions,
     });
   } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function generateResetPasswordCode() {
+  const digits = "0123456789";
+  let code = "";
+  for (let i = 0; i < 4; i++) {
+    code += digits[Math.floor(Math.random() * digits.length)];
+  }
+  console.log("Generated reset password code:", code);
+  return code;
+}
+
+async function sendResetPasswordCode(phoneNumber, code) {
+  // Implementation to send reset password code via SMS
+  console.log(`Sending reset password code ${code} to ${phoneNumber}`);
+  // Actual implementation to send SMS would go here
+}
+
+async function getUserByPhoneNumber(phoneNumber) {
+  // Example implementation to retrieve user by phone number from database
+  return await Referee.findOne({ contact_number: phoneNumber });
+}
+
+async function storeResetPasswordData(phoneNumber, code) {
+  verificationDataStore[phoneNumber] = {
+    code,
+    timestamp: Date.now(),
+  };
+}
+
+async function verifyResetPasswordCode(phoneNumber, code) {
+  const resetData = verificationDataStore[phoneNumber];
+  if (!resetData) return false;
+
+  // Check if reset password code has expired
+  if (Date.now() - resetData.timestamp > RESET_PASSWORD_CODE_EXPIRATION_TIME) {
+    delete verificationDataStore[phoneNumber]; // Remove expired reset password data
+    return false;
+  }
+
+  return resetData.code === code;
+}
+
+async function resetPassword(req, res) {
+  try {
+    const { phoneNumber, code, newPassword } = req.body;
+
+    // Verify reset password code
+    const isCodeValid = await verifyResetPasswordCode(phoneNumber, code);
+    if (!isCodeValid) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or expired reset password code" });
+    }
+
+    // Reset password for the user
+    const user = await getUserByPhoneNumber(phoneNumber);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    // Clear temporary reset password data
+    delete verificationDataStore[phoneNumber];
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error(error); // Log error for debugging purposes
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function requestResetPassword(req, res) {
+  try {
+    const { phoneNumber } = req.body;
+
+    // Check if user with the provided phone number exists
+    const user = await getUserByPhoneNumber(phoneNumber);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Generate a reset password code
+    const resetCode = await generateResetPasswordCode();
+
+    // Send the reset password code via SMS
+    await sendResetPasswordCode(phoneNumber, resetCode);
+
+    // Store the reset password code temporarily
+    await storeResetPasswordData(phoneNumber, resetCode);
+
+    res.status(200).json({
+      message: "Reset password code sent to your phone number",
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging purposes
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -164,4 +395,7 @@ module.exports = {
   login,
   getUserById,
   updatePassword,
+  verifyCode,
+  requestResetPassword,
+  resetPassword,
 };

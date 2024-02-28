@@ -17,7 +17,7 @@ async function getStatus(req, res) {
     res.status(404).json({ error: "No such Status" });
   }
 
-  const status = await Status.findById({ _id: id });
+  const status = await RefStatus.findById({ _id: id });
 
   if (!status) {
     res.status(400).json({ error: "No such Status" });
