@@ -132,19 +132,13 @@ const Profile = () => {
                             </ListItemSecondaryAction>
                         </ListItemButton>
                         <Divider />
-                      
                     </List>
-                    
                 </SubCard>
             </Grid>
             <Grid item lg={8} xs={12}>
                 <Grid container spacing={gridSpacing}>
-                   
-                      
-
                     <Grid item xs={12}>
-                        <SubCard title="Personal details">
-                        </SubCard>
+                        <SubCard title="Personal details"></SubCard>
                     </Grid>
 
                     <Grid item xs={12}>
@@ -289,15 +283,8 @@ const Profile = () => {
                                     />
                                 </Grid>
                             </Grid> */}
-
-
                         </SubCard>
-
-                        
-                
-
                     </Grid>
-                   
                 </Grid>
             </Grid>
         </Grid>
