@@ -11,6 +11,7 @@ const Counter = require("../models/counter");
 const Lead = require("../models/lead");
 const Student = require("../models/student");
 const FollowUp = require("../models/followUp");
+const referralFollowupAssignment = require("../models/followUpAssignment");
 const moment = require("moment-timezone");
 
 // add new referral
@@ -102,6 +103,16 @@ async function addNewReferral(req, res) {
     });
     if (!followup) {
       return res.status(500).json({ error: "Follow Up Error" });
+    }
+
+    // add referral followup assignment
+    const followupAssignment = await referralFollowupAssignment.create({
+      ref: referral._id,
+      status_id: status._id,
+      assigned_at: customDateUTC,
+    });
+    if (!followupAssignment) {
+      return res.status(500).json({ error: "Follow Up Assignment Error" });
     }
 
     // find status
