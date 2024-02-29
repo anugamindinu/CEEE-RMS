@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
-import mainLogo from '../../../../assets/images/sltc-logo.png';
+import mainLogo from 'ui-component/Logo';
 import AuthRegister from '../auth-forms/AuthBank';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import useAuth from 'hooks/useAuth';
@@ -19,7 +19,7 @@ import useAuth from 'hooks/useAuth';
 
 // ===============================|| AUTH3 - REGISTER ||=============================== //
 
-const bankdetails = () => {
+const Bankdetails = () => {
     const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
     const { isLoggedIn } = useAuth();
 
@@ -31,11 +31,11 @@ const bankdetails = () => {
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                                <Grid item sx={{ mb: 3 }}>
-                                    <Link to="#">
-                                    <img  src={mainLogo} width={'200px'} alt="SLTC Logo"/>
-                                    </Link>
-                                </Grid>
+                                    <Grid item sx={{ mb: 3 }}>
+                                        <Link to="#">
+                                            <img src={mainLogo} width={'200px'} alt="SLTC Logo" />
+                                        </Link>
+                                    </Grid>
                                     <Grid item xs={12}>
                                         <Grid
                                             container
@@ -69,7 +69,11 @@ const bankdetails = () => {
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
                                                 component={Link}
-                                                to={isLoggedIn ? '/pages/bankdetails/bankdetails3' : '/login'}
+                                                to={
+                                                    isLoggedIn
+                                                        ? '/pages/bankdetails/bankdetails3'
+                                                        : '/pages/code-verification/code-verification3'
+                                                }
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
                                                 fullWidth
@@ -91,4 +95,4 @@ const bankdetails = () => {
     );
 };
 
-export default bankdetails;
+export default Bankdetails;

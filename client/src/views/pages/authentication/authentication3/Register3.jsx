@@ -1,16 +1,23 @@
 import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button'; // Import Button component
+
+// material-ui
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
+// project imports
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
-import mainLogo from '../../../../assets/images/sltc-logo.png';
+import Logo from 'ui-component/Logo';
 import AuthRegister from '../auth-forms/AuthRegister';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import useAuth from 'hooks/useAuth';
+
+// assets
+
+// ===============================|| AUTH3 - REGISTER ||=============================== //
 
 const Register = () => {
     const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
@@ -18,15 +25,15 @@ const Register = () => {
 
     return (
         <AuthWrapper1>
-            <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: '100vh' , backgroundColor: '#001d4f' }}>
+            <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: '100vh' }}>
                 <Grid item xs={12}>
                     <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 68px)' }}>
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                                     <Grid item sx={{ mb: 3 }}>
-                                        <Link to="#">
-                                            <img  src={mainLogo} width={'200px'} alt="SLTC Logo"/>
+                                        <Link to="#" aria-label="theme logo">
+                                            <Logo />
                                         </Link>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -60,6 +67,14 @@ const Register = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Grid item container direction="column" alignItems="center" xs={12}>
+                                            <Typography
+                                                component={Link}
+                                                to={isLoggedIn ? '/pages/login/login3' : '/login'}
+                                                variant="subtitle1"
+                                                sx={{ textDecoration: 'none' }}
+                                            >
+                                                Already have an account?
+                                            </Typography>
                                         </Grid>
                                     </Grid>
                                 </Grid>

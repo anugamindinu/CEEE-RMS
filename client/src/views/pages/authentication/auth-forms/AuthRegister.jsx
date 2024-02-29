@@ -1,8 +1,10 @@
+// JWTRegister.js
+
 import React, { useEffect } from 'react';
 import { useDispatch } from 'store';
 import { Link, useNavigate } from 'react-router-dom';
 
-// Material-UI components
+// material-ui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,20 +19,22 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 
-// Third-party components
+// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// Project components and hooks
+// project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { openSnackbar } from 'store/slices/snackbar';
 
-// Material-UI icons
+// assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+// ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const JWTRegister = ({ ...others }) => {
     const theme = useTheme();
@@ -66,53 +70,44 @@ const JWTRegister = ({ ...others }) => {
     return (
         <Formik
             initialValues={{
-                full_name: '',
+                name: '',
                 email: '',
-                contact_no: '',
+                phoneNumber: '',
                 password: '',
                 con_password: '',
                 submit: null
             }}
             validationSchema={Yup.object().shape({
-                full_name: Yup.string()
-                    .matches(/^[A-Za-z]+$/, 'Full name should not contain numbers')
-                    .max(255)
-                    .required('Full name is required'),
-                contact_no: Yup.string()
+                name: Yup.string().max(255).required('First name is required'),
+                phoneNumber: Yup.string()
                     .matches(/^\+?\d{10,12}$/, 'Contact No should be 10 to 12 digits with an optional leading + sign')
                     .required('Contact No is required'),
                 email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
                 password: Yup.string().max(255).required('Password is required'),
-                con_password: Yup.string().max(255).required('Password confirmation is required')
+                con_password: Yup.string().max(255).required('Password is required')
             })}
-            onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                try {
-                    // Registration logic...
-
-                    // Navigation logic...
-                    navigate('/bankdetails');
-                } catch (err) {
-                    console.error(err);
-                    // Error handling...
-                }
+            onSubmit={async (values) => {
+                console.log(values);
+                window.localStorage.setItem('tempUser', JSON.stringify(values));
+                navigate('/pages/bankdetails/bankdetails3');
             }}
         >
             {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                 <form noValidate onSubmit={handleSubmit} {...others}>
-                    <FormControl fullWidth error={Boolean(touched.full_name && errors.full_name)} sx={{ ...theme.typography.customInput }}>
+                    <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
                         <InputLabel htmlFor="outlined-adornment-email-register">Full name</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-email-register"
                             type="text"
-                            value={values.full_name}
-                            name="full_name"
+                            value={values.name}
+                            name="name"
                             onBlur={handleBlur}
                             onChange={handleChange}
                             inputProps={{}}
                         />
-                        {touched.full_name && errors.full_name && (
+                        {touched.name && errors.name && (
                             <FormHelperText error id="standard-weight-helper-text--register">
-                                {errors.full_name}
+                                {errors.name}
                             </FormHelperText>
                         )}
                     </FormControl>
@@ -133,20 +128,24 @@ const JWTRegister = ({ ...others }) => {
                             </FormHelperText>
                         )}
                     </FormControl>
-                    <FormControl fullWidth error={Boolean(touched.contact_no && errors.contact_no)} sx={{ ...theme.typography.customInput }}>
+                    <FormControl
+                        fullWidth
+                        error={Boolean(touched.phoneNumber && errors.phoneNumber)}
+                        sx={{ ...theme.typography.customInput }}
+                    >
                         <InputLabel htmlFor="outlined-adornment-contact-number">Contact number</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-contact-number"
                             type="numbers"
-                            value={values.contact_no}
-                            name="contact_no"
+                            value={values.phoneNumber}
+                            name="phoneNumber"
                             onBlur={handleBlur}
                             onChange={handleChange}
                             inputProps={{}}
                         />
-                        {touched.contact_no && errors.contact_no && (
+                        {touched.phoneNumber && errors.phoneNumber && (
                             <FormHelperText error id="standard-weight-helper-text--register">
-                                {errors.contact_no}
+                                {errors.phoneNumber}
                             </FormHelperText>
                         )}
                     </FormControl>
@@ -185,14 +184,18 @@ const JWTRegister = ({ ...others }) => {
                             </FormHelperText>
                         )}
                     </FormControl>
-                    <FormControl fullWidth error={Boolean(touched.con_password && errors.con_password)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-confrim-password-register">Confirm Password</InputLabel>
+                    <FormControl
+                        fullWidth
+                        error={Boolean(touched.con_password && errors.con_password)}
+                        sx={{ ...theme.typography.customInput }}
+                    >
+                        <InputLabel htmlFor="outlined-adornment-confrim-password-register">Confrim Password</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-confrim-password-register"
                             type={showPassword ? 'text' : 'password'}
                             value={values.con_password}
                             name="con_password"
-                            label="Confirm Password"
+                            label="Password"
                             onBlur={handleBlur}
                             onChange={(e) => {
                                 handleChange(e);
@@ -241,16 +244,7 @@ const JWTRegister = ({ ...others }) => {
                                 }
                             />
                         </Grid>
-                        <Grid item>
-                            <Typography variant="body2" color="textSecondary">
-                                Already have an account?{' '}
-                                <Link to="/login" variant="subtitle2">
-                                    Log in
-                                </Link>
-                            </Typography>
-                        </Grid>
                     </Grid>
-
                     {errors.submit && (
                         <Box sx={{ mt: 3 }}>
                             <FormHelperText error>{errors.submit}</FormHelperText>

@@ -161,13 +161,16 @@ async function sendVerificationCode(phoneNumber, verificationCode) {
   const url = "https://richcommunication.dialog.lk/api/sms/send";
   const apiKey = process.env.SMS_API_KEY;
 
+  // Normalize the phone number
+  const newPhoneNumber = normalizePhoneNumber(phoneNumber);
+
   const data = {
     messages: [
       {
         clientRef: "0934345",
-        number: phoneNumber,
+        number: newPhoneNumber,
         mask: "SLTC", // Update the mask if necessary
-        text: `This is a test message 2`,
+        text: `Your OTP code is ${verificationCode}. Please enter this code to complete registration.`,
         campaignName: "rmstest",
       },
     ],
@@ -206,6 +209,13 @@ async function sendVerificationCode(phoneNumber, verificationCode) {
     console.error("Error sending verification code:", error.message);
     throw error;
   }
+}
+
+function normalizePhoneNumber(phoneNumber) {
+  // Remove any non-digit characters
+  const digitsOnly = phoneNumber.replace(/\D/g, '');
+  // If the number starts with '0', remove it and prepend '94', else just return the number
+  return digitsOnly.startsWith('0') ? '94' + digitsOnly.slice(1) : digitsOnly;
 }
 
 async function login(req, res) {

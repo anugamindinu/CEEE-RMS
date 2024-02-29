@@ -6,6 +6,10 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import useAuth from 'hooks/useAuth';
+
+// navigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 // third-party
 import OtpInput from 'react18-input-otp';
@@ -13,12 +17,65 @@ import OtpInput from 'react18-input-otp';
 // project imports
 import { ThemeMode } from 'config';
 
+import config from '../../../../config';
+
 // ============================|| STATIC - CODE VERIFICATION ||============================ //
+
+async function sendVerificationCode(verificationCode) {
+    try {
+        // Make a fetch or axios call to your backend API to send the verification code
+        // get the phoneNumber from localstorage tempUser
+        const tempUser = JSON.parse(localStorage.getItem('tempUser'));
+        const phoneNumber = tempUser.phoneNumber;
+
+        if (!phoneNumber) {
+            console.error('No phone number found');
+            return;
+        }
+
+        const response = await fetch(config.apiUrl + 'api/referral/verifyCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ phoneNumber, verificationCode })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send verification code');
+        } else {
+            const data = await response.json();
+            console.log(data);
+        }
+
+        // Handle success response if necessary
+        console.log('Verified'); // navigate to the login page
+        navigate('/login');
+    } catch (error) {
+        console.error('Error sending verification code:', error.message);
+        // Handle error
+    }
+}
 
 const AuthCodeVerification = () => {
     const theme = useTheme();
-    const [otp, setOtp] = useState();
+    const [otp, setOtp] = useState('');
     const borderColor = theme.palette.mode === ThemeMode.DARK ? theme.palette.grey[200] : theme.palette.grey[300];
+    const navigate = useNavigate();
+
+    const handleContinue = async () => {
+        // Check if OTP is not empty before sending
+        if (otp.trim() === '') {
+            console.error('Verification code is empty');
+            return;
+        }
+
+        // Send the verification code to the server
+        await sendVerificationCode(otp);
+        navigate('/login');
+        // remove tempUser from localstorage
+        localStorage.removeItem('tempUser');
+    };
 
     return (
         <Grid container spacing={3}>
@@ -45,7 +102,7 @@ const AuthCodeVerification = () => {
                 />
             </Grid>
             <Grid item xs={12}>
-                <Button disableElevation fullWidth size="large" type="submit" variant="contained">
+                <Button disableElevation fullWidth size="large" type="submit" variant="contained" onClick={handleContinue}>
                     Continue
                 </Button>
             </Grid>

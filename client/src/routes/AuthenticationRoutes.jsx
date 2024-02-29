@@ -27,6 +27,7 @@ const AuthForgotPassword3 = Loadable(lazy(() => import('views/pages/authenticati
 const AuthCheckMail3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/CheckMail3')));
 const AuthResetPassword3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/ResetPassword3')));
 const AuthCodeVerification3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/CodeVerification3')));
+const Bankdetails = Loadable(lazy(() => import('views/pages/authentication/authentication3/BankDetails')));
 
 // maintenance routing
 const MaintenanceError = Loadable(lazy(() => import('views/pages/maintenance/Error')));
@@ -100,6 +101,10 @@ const AuthenticationRoutes = {
         {
             path: '/pages/login/login3',
             element: <AuthLogin3 />
+        },
+        {
+            path: '/pages/bankdetails/bankdetails3',
+            element: <Bankdetails />
         },
         {
             path: '/pages/register/register3',
