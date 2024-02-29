@@ -4,6 +4,6 @@ const refStatusSchema = new mongoose.Schema({
     name: String
 })
 
-const refStatus = mongoose.model('RefStatus', refStatusSchema)
+const refstatuses = mongoose.model('refstatuses', refStatusSchema)
 
-module.exports = refStatus
+module.exports = refstatuses
