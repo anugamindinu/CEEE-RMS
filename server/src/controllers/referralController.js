@@ -11,7 +11,6 @@ const Counter = require("../models/counter");
 const Lead = require("../models/lead");
 const Student = require("../models/student");
 const FollowUp = require("../models/followUp");
-const { default: mongoose } = require("mongoose");
 const moment = require("moment-timezone");
 
 // add new referral
