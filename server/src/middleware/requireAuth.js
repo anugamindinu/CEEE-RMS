@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const Referee = require("../models/referee");
 
 async function requireAuth(req, res, next) {
   const { authorization } = req.headers;
@@ -13,7 +13,7 @@ async function requireAuth(req, res, next) {
 
   try {
     const { _id } = jwt.verify(token, secret);
-    req.user = await User.findById(_id);
+    req.user = await Referee.findById(_id);
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {

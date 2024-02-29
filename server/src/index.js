@@ -8,17 +8,7 @@ const cors = require("cors");
 const connectToDatabase = require("../database");
 
 // crm routes
-const studentRoutes = require("./routes/studentRoutes");
-const user_typeRoutes = require("./routes/user_typeRoutes");
-const userRoutes = require("./routes/userRoutes");
-const leadRoutes = require("./routes/leadRoutes");
-const branchRoutes = require("./routes/branchRoutes");
 const courseRoutes = require("./routes/courseRoutes");
-const statusRoutes = require("./routes/statusRoutes");
-const folowUpRoutes = require("./routes/folowUpRoutes");
-const sourceRoutes = require("./routes/sourceRoutes");
-const notificationRoutes = require("./routes/notificationRoutes");
-const counsellorAssignmentRoutes = require("./routes/counsellorAssignmentRoutes");
 
 // rms routes
 const refereesRoutes = require("./routes/refereesRoutes");
@@ -56,15 +46,11 @@ app.use(logFunctionExecution);
 app.use((req, res, next) => {
   // Define paths that should be excluded from authentication
   const excludedPaths = [
-    "/api/login",
     "/api/referral/login",
     "/api/referral/verifyCode",
     "/api/referral/login",
     "/api/referral/referees/add-new",
     "/api/referral/verifyCode",
-    "/api/fbleads",
-    "/api/fbleads-health",
-    "/api/test-leads"
   ];
 
   // Check if the current request path is in the excluded paths
@@ -77,17 +63,7 @@ app.use((req, res, next) => {
 });
 
 // Use the student routes
-app.use("/api", user_typeRoutes);
-app.use("/api", studentRoutes);
-app.use("/api", userRoutes);
-app.use("/api", leadRoutes);
-app.use("/api", branchRoutes);
 app.use("/api", courseRoutes);
-app.use("/api", statusRoutes);
-app.use("/api", folowUpRoutes);
-app.use("/api", sourceRoutes);
-app.use("/api", counsellorAssignmentRoutes);
-app.use("/api", notificationRoutes);
 
 // use rms routes
 app.use("/api/referral", refereesRoutes);
