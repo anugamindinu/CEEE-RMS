@@ -20,6 +20,8 @@ const WidgetChart = Loadable(lazy(() => import('views/widget/Chart')));
 // application - user social & account profile routing
 const AppUserSocialProfile = Loadable(lazy(() => import('views/application/users/social-profile')));
 const AppUserAccountProfile1 = Loadable(lazy(() => import('views/application/users/account-profile/Profile1')));
+const AppUserAccountProfile2 = Loadable(lazy(() => import('views/application/users/account-profile/Profile2')));
+const AppUserAccountProfile3 = Loadable(lazy(() => import('views/application/users/account-profile/Profile3')));
 
 // application - user cards & list variant routing
 const AppProfileCardStyle1 = Loadable(lazy(() => import('views/application/users/card/CardStyle1')));
@@ -173,6 +175,9 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const Refferal = Loadable(lazy(() => import('views/pages/createNewReferralForm/refferalform')));
 const ProfileUp = Loadable(lazy(() => import('views/pages/profileUpdate/profile')));
 
+const Courses = Loadable(lazy(() => import('views/pages/courseDetails/courses')));
+
+
 
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -206,8 +211,24 @@ const MainRoutes = {
             path: '/apps/user/account-profile/profile1',
             element: <AppUserAccountProfile1 />
         },
+        {
+            path: '/apps/user/account-profile/profile2',
+            element: <AppUserAccountProfile2 />
+        },
+        {
+            path: '/apps/user/account-profile/profile3',
+            element: <AppUserAccountProfile3 />
+        },
 
-                {
+        {
+            path: '/apps/user/card/card1',
+            element: <AppProfileCardStyle1 />
+        },
+        {
+            path: '/apps/user/card/card2',
+            element: <AppProfileCardStyle2 />
+        },
+        {
             path: '/apps/user/card/card3',
             element: <AppProfileCardStyle3 />
         },
@@ -674,12 +695,16 @@ const MainRoutes = {
             element: <DashboardAnalytics />
         },
         {
-            path: '/pages/createNewReferralForm',
+            path: '/createNewReferralForm',
             element: <Refferal />
         },
         {
-            path: 'pages/profileUpdate',
+            path: 'profileUpdate',
             element: <ProfileUp />
+        },
+        {
+            path: 'courseDetails',
+            element: <Courses />
         }
     ]
 };

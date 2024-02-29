@@ -51,7 +51,7 @@ const AuthCodeVerification = () => {
             </Grid>
             <Grid item xs={12}>
                 <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                    <Typography>Did not receive the email? Check your spam filter, or</Typography>
+                    <Typography>Did not receive the massage?</Typography>
                     <Typography variant="body1" sx={{ minWidth: 85, ml: 2, textDecoration: 'none', cursor: 'pointer' }} color="primary">
                         Resend code
                     </Typography>

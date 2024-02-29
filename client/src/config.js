@@ -26,7 +26,8 @@ const config = {
     presetColor: 'default',
     i18n: 'en',
     themeDirection: ThemeDirection.LTR,
-    container: false
+    container: false,
+    apiUrl: 'https://localhost:8080/',
 };
 
 export default config;

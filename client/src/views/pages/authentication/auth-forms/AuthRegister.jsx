@@ -1,10 +1,8 @@
-// JWTRegister.js
-
 import React, { useEffect } from 'react';
 import { useDispatch } from 'store';
 import { Link, useNavigate } from 'react-router-dom';
 
-// material-ui
+// Material-UI components
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,22 +17,20 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 
-// third party
+// Third-party components
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project imports
+// Project components and hooks
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { openSnackbar } from 'store/slices/snackbar';
 
-// assets
+// Material-UI icons
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-// ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const JWTRegister = ({ ...others }) => {
     const theme = useTheme();
@@ -48,7 +44,6 @@ const JWTRegister = ({ ...others }) => {
     const [strength, setStrength] = React.useState(0);
     const [level, setLevel] = React.useState();
     const { register } = useAuth();
-
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -82,47 +77,23 @@ const JWTRegister = ({ ...others }) => {
                 full_name: Yup.string()
                     .matches(/^[A-Za-z]+$/, 'Full name should not contain numbers')
                     .max(255)
-                    .required('First name is required'),
+                    .required('Full name is required'),
                 contact_no: Yup.string()
                     .matches(/^\+?\d{10,12}$/, 'Contact No should be 10 to 12 digits with an optional leading + sign')
                     .required('Contact No is required'),
                 email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
                 password: Yup.string().max(255).required('Password is required'),
-                con_password: Yup.string().max(255).required('Password is required')
+                con_password: Yup.string().max(255).required('Password confirmation is required')
             })}
             onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                 try {
-                    // await register(values.email, values.password, values.firstName, values.lastName);
-                    if (scriptedRef.current) {
-                        setStatus({ success: true });
-                        setSubmitting(false);
-                        dispatch(
-                            openSnackbar({
-                                open: true,
-                                message: 'Your registration has been successfully completed.',
-                                variant: 'alert',
-                                alert: {
-                                    color: 'success'
-                                },
-                                close: false
-                            })
-                        );
+                    // Registration logic...
 
-                        setTimeout(() => {
-                            navigate('/login', { replace: true });
-                        }, 1500);
-                        
-                    }
-
-                    // Navigate to bank details page
-                    navigate('/bank-details');
+                    // Navigation logic...
+                    navigate('/bankdetails');
                 } catch (err) {
                     console.error(err);
-                    if (scriptedRef.current) {
-                        setStatus({ success: false });
-                        setErrors({ submit: err.message });
-                        setSubmitting(false);
-                    }
+                    // Error handling...
                 }
             }}
         >
@@ -215,13 +186,13 @@ const JWTRegister = ({ ...others }) => {
                         )}
                     </FormControl>
                     <FormControl fullWidth error={Boolean(touched.con_password && errors.con_password)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-confrim-password-register">Confrim Password</InputLabel>
+                        <InputLabel htmlFor="outlined-adornment-confrim-password-register">Confirm Password</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-confrim-password-register"
                             type={showPassword ? 'text' : 'password'}
                             value={values.con_password}
                             name="con_password"
-                            label="Password"
+                            label="Confirm Password"
                             onBlur={handleBlur}
                             onChange={(e) => {
                                 handleChange(e);
@@ -270,7 +241,16 @@ const JWTRegister = ({ ...others }) => {
                                 }
                             />
                         </Grid>
+                        <Grid item>
+                            <Typography variant="body2" color="textSecondary">
+                                Already have an account?{' '}
+                                <Link to="/login" variant="subtitle2">
+                                    Log in
+                                </Link>
+                            </Typography>
+                        </Grid>
                     </Grid>
+
                     {errors.submit && (
                         <Box sx={{ mt: 3 }}>
                             <FormHelperText error>{errors.submit}</FormHelperText>

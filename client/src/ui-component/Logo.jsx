@@ -16,7 +16,7 @@ import logo from '../assets/images/sltc-logo.png'; // Import your JPG logo file
 const Logo = () => {
   return (
     // if you want to use image instead of svg uncomment following, and comment out <svg> element.
-    <img src={logo} alt="Your Company Name" width="120" /> // Replace 'logo' with your own image source
+    <img src={logo} alt="Your Company Name" width="130" /> // Replace 'logo' with your own image source
   );
 };
 

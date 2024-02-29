@@ -33,13 +33,15 @@ const AuthForgotPassword = ({ ...others }) => {
 
     return (
         <Formik
-            initialValues={{ email: '', submit: null }}
+            initialValues={{ phone: '', submit: null }}
             validationSchema={Yup.object().shape({
-                email: Yup.string().email('Must be a valid email').max(255).required('Email is required')
+                phone: Yup.string()
+                    .matches(/^[0-9]{10}$/, 'Must be a valid phone number')
+                    .required('Phone number required')
             })}
             onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                 try {
-                    await resetPassword(values.email).then(
+                    await resetPassword(values.phone).then(
                         () => {
                             setStatus({ success: true });
                             setSubmitting(false);
@@ -55,11 +57,6 @@ const AuthForgotPassword = ({ ...others }) => {
                             setTimeout(() => {
                                 navigate(isLoggedIn ? '/auth/check-mail' : '/check-mail', { replace: true });
                             }, 1500);
-
-                            // WARNING: do not set any formik state here as formik might be already destroyed here. You may get following error by doing so.
-                            // Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application.
-                            // To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-                            // github issue: https://github.com/formium/formik/issues/2430
                         },
                         (err) => {
                             setStatus({ success: false });
@@ -79,21 +76,21 @@ const AuthForgotPassword = ({ ...others }) => {
         >
             {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                 <form noValidate onSubmit={handleSubmit} {...others}>
-                    <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-                        <InputLabel htmlFor="outlined-adornment-email-forgot">Email Address / Username</InputLabel>
+                    <FormControl fullWidth error={Boolean(touched.phone && errors.phone)} sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="outlined-adornment-phone-forgot">Phone number</InputLabel>
                         <OutlinedInput
-                            id="outlined-adornment-email-forgot"
-                            type="email"
-                            value={values.email}
-                            name="email"
+                            id="outlined-adornment-phone-forgot"
+                            type="tel" // Change input type to "tel" for phone numbers
+                            value={values.phone}
+                            name="phone"
                             onBlur={handleBlur}
                             onChange={handleChange}
-                            label="Email Address / Username"
+                            label="Phone number"
                             inputProps={{}}
                         />
-                        {touched.email && errors.email && (
-                            <FormHelperText error id="standard-weight-helper-text-email-forgot">
-                                {errors.email}
+                        {touched.phone && errors.phone && (
+                            <FormHelperText error id="standard-weight-helper-text-phone-forgot">
+                                {errors.phone}
                             </FormHelperText>
                         )}
                     </FormControl>
@@ -115,7 +112,7 @@ const AuthForgotPassword = ({ ...others }) => {
                                 variant="contained"
                                 color="secondary"
                             >
-                                Send Mail
+                                Send OTP
                             </Button>
                         </AnimateButton>
                     </Box>

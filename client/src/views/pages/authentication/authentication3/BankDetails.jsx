@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
-import mainLogo from 'ui-component/sltc-logo.png';
+import mainLogo from '../../../../assets/images/sltc-logo.png';
 import AuthRegister from '../auth-forms/AuthBank';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import useAuth from 'hooks/useAuth';

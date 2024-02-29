@@ -14,6 +14,7 @@ import Loader from 'ui-component/Loader';
 import axios from 'utils/axios';
 
 const chance = new Chance();
+import config from '../config';
 
 // constant
 const initialState = {
@@ -80,45 +81,44 @@ export const JWTProvider = ({ children }) => {
         init();
     }, []);
 
-    const login = async (email, password) => {
-        const response = await axios.post('/api/account/login', { email, password });
-        const { serviceToken, user } = response.data;
-        setSession(serviceToken);
-        dispatch({
-            type: LOGIN,
-            payload: {
-                isLoggedIn: true,
-                user
-            }
+    const login = async (values) => {
+        const response = await fetch(config.apiUrl + 'api/referral/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(values)
         });
-    };
+        const json = await response.json();
+        if (response.ok) {
+            // save the user to local storage
+            localStorage.setItem('user', JSON.stringify(json));
 
-    const register = async (email, password, firstName, lastName) => {
-        // todo: this flow need to be recode as it not verified
-        const id = chance.bb_pin();
-        const response = await axios.post('/api/account/register', {
-            id,
-            email,
-            password,
-            firstName,
-            lastName
-        });
-        let users = response.data;
-
-        if (window.localStorage.getItem('users') !== undefined && window.localStorage.getItem('users') !== null) {
-            const localUsers = window.localStorage.getItem('users');
-            users = [
-                ...JSON.parse(localUsers),
-                {
-                    id,
-                    email,
-                    password,
-                    name: `${firstName} ${lastName}`
+            // update the auth context
+            dispatch({
+                type: LOGIN,
+                payload: {
+                    isLoggedIn: true,
+                    json
                 }
-            ];
+            });
         }
 
-        window.localStorage.setItem('users', JSON.stringify(users));
+        setSession(json.token);
+    };
+
+    const register = async (values) => {
+        // todo: this flow need to be recode as it not verified
+        const response = await fetch(config.apiUrl + 'api/referral/referees/add-new', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(values)
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            console.log("verification code sent", json)
+        } else {
+            console.log("error")
+        }
     };
 
     const logout = () => {

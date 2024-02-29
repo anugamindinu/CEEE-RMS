@@ -12,6 +12,7 @@ const AuthRegister = Loadable(lazy(() => import('views/pages/authentication/auth
 const AuthForgotPassword = Loadable(lazy(() => import('views/pages/authentication/authentication3/ForgotPassword3')));
 const AuthResetPassword = Loadable(lazy(() => import('views/pages/authentication/authentication3/ResetPassword3')));
 const AuthCheckMail = Loadable(lazy(() => import('views/pages/authentication/authentication3/CheckMail3')));
+const AuthBankLogin = Loadable(lazy(() => import('views/pages/authentication/authentication3/BankDetails')));
 
 // ==============================|| AUTH ROUTING ||============================== //
 
@@ -25,6 +26,10 @@ const LoginRoutes = {
         </NavMotion>
     ),
     children: [
+        {
+            path: '/bankdetails',
+            element: <AuthBankLogin />
+        },
         {
             path: '/login',
             element: <AuthLogin />

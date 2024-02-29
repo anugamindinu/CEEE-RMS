@@ -9,10 +9,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
-import Logo from 'ui-component/Logo';
 import AuthForgotPassword from '../auth-forms/AuthForgotPassword';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import useAuth from 'hooks/useAuth';
+
+import mainLogo from '../../../../assets/images/sltc-logo.png';
 
 // ============================|| AUTH3 - FORGOT PASSWORD ||============================ //
 
@@ -22,15 +23,15 @@ const ForgotPassword = () => {
 
     return (
         <AuthWrapper1>
-            <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: '100vh' }}>
+            <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: '100vh', backgroundColor: '#001d4f' }}>
                 <Grid item xs={12}>
                     <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 68px)' }}>
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                                     <Grid item sx={{ mb: 3 }}>
-                                        <Link to="#" aria-label="theme logo">
-                                            <Logo />
+                                        <Link to="#" aria-label="logo">
+                                            <img src={mainLogo} width={'200px'} alt="SLTC Logo" />
                                         </Link>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -42,7 +43,7 @@ const ForgotPassword = () => {
                                             </Grid>
                                             <Grid item xs={12}>
                                                 <Typography variant="caption" fontSize="16px" textAlign="center">
-                                                    Enter your email address below and we&apos;ll send you password reset OTP.
+                                                    Enter your phone number below and we&apos;ll send you password reset OTP.
                                                 </Typography>
                                             </Grid>
                                         </Grid>
@@ -55,14 +56,6 @@ const ForgotPassword = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Grid item container direction="column" alignItems="center" xs={12}>
-                                            <Typography
-                                                component={Link}
-                                                to={isLoggedIn ? '/pages/login/login3' : '/login'}
-                                                variant="subtitle1"
-                                                sx={{ textDecoration: 'none' }}
-                                            >
-                                                Already have an account?
-                                            </Typography>
                                         </Grid>
                                     </Grid>
                                 </Grid>

@@ -64,6 +64,26 @@ const application = {
                             type: 'item',
                             url: '/apps/user/account-profile/profile1'
                         },
+                        {
+                            id: 'profile2',
+                            title: (
+                                <>
+                                    <FormattedMessage id="profile" /> 02
+                                </>
+                            ),
+                            type: 'item',
+                            url: '/apps/user/account-profile/profile2'
+                        },
+                        {
+                            id: 'profile3',
+                            title: (
+                                <>
+                                    <FormattedMessage id="profile" /> 03
+                                </>
+                            ),
+                            type: 'item',
+                            url: '/apps/user/account-profile/profile3'
+                        }
                     ]
                 },
                 {
