@@ -13,5 +13,7 @@ router.post("/verifyCode", refereesController.verifyCode);
 router.post("/requestResetPassword", refereesController.requestResetPassword);
 // resetPassword
 router.post("/resetPassword", refereesController.resetPassword);
+// resend verification code
+router.post("/resendVerificationCode", refereesController.resendVerificationCode);
 
 module.exports = router;

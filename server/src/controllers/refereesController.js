@@ -211,6 +211,10 @@ async function sendVerificationCode(phoneNumber, verificationCode) {
   }
 }
 
+async function resendVerificationCode(req, res) {
+  sendVerificationCode(phoneNumber, verificationCode);
+}
+
 function normalizePhoneNumber(phoneNumber) {
   // Remove any non-digit characters
   const digitsOnly = phoneNumber.replace(/\D/g, '');
@@ -422,4 +426,5 @@ module.exports = {
   verifyCode,
   requestResetPassword,
   resetPassword,
+  resendVerificationCode,
 };
